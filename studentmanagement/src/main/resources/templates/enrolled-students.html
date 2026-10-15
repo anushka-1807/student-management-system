@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head}"></head>
+
+<body>
+<div class="d-flex" id="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+
+    <div id="page-content-wrapper">
+        <div th:replace="~{fragments/layout :: navbar}"></div>
+
+        <div class="container-fluid px-4 py-4">
+
+            <!-- Page header -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <div>
+                    <h2 class="mb-0">Enrolled Students</h2>
+                    <p class="text-muted mb-0" style="font-size:.85rem;margin-top:2px;">Track student enrollment coverage, course counts, and tuition fees</p>
+                </div>
+                <a th:href="@{/enrollments/showEnroll}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> Enroll Student
+                </a>
+            </div>
+
+            <!-- Success alert -->
+            <div th:if="${message}" class="alert alert-success" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span th:text="${message}"></span>
+            </div>
+
+            <!-- Table Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-person-check-fill"></i> Enrolled Students List
+                </div>
+                <div class="card-body p-0">
+                    <div class="text-muted p-4" th:if="${students.content.isEmpty()}">
+                        <i class="bi bi-inbox me-2"></i>No enrolled students found. Enroll a student to get started!
+                    </div>
+
+                    <div class="table-responsive" th:if="${!students.content.isEmpty()}">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student</th>
+                                    <th>Email</th>
+                                    <th>Courses Enrolled</th>
+                                    <th>Total Tuition</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="student : ${students.content}">
+                                    <td data-label="ID" th:text="${student.studentId}"></td>
+                                    <td data-label="Student">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;"
+                                                 th:text="${#strings.substring(student.studentName,0,1)}">S</div>
+                                            <div class="fw-semibold" th:text="${student.studentName}"></div>
+                                        </div>
+                                    </td>
+                                    <td data-label="Email" th:text="${student.email}"></td>
+                                    <td data-label="Courses Enrolled">
+                                        <span class="badge" style="background:rgba(99,102,241,.12);color:var(--primary);font-size:.8rem;padding:4px 10px;border-radius:6px;font-weight:600;">
+                                            <i class="bi bi-journal-text me-1"></i>
+                                            <span th:text="${student.courseCount}">0</span> Courses
+                                        </span>
+                                    </td>
+                                    <td data-label="Total Tuition" class="fw-bold text-primary"
+                                        th:text="'₹' + ${#numbers.formatDecimal(student.totalFee, 1, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                                    <td data-label="Actions">
+                                        <a th:href="@{/enrollments/getStudentEnrollmentDetails/{id}(id=${student.studentId}, source='enrollments')}"
+                                           class="btn btn-sm btn-info" title="View Enrollment Details">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="px-4 py-3 border-top" th:if="${students.totalPages > 1}">
+                        <nav aria-label="Enrollment pagination">
+                            <ul class="pagination justify-content-end mb-0">
+                                <li class="page-item" th:classappend="${students.first} ? 'disabled'">
+                                    <a class="page-link" th:href="@{'/enrollments/enrollmentList'(page=${students.first ? 0 : students.number - 1}, size=${students.size})}">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, students.totalPages-1)}"
+                                    th:classappend="${pageNum} == ${students.number} ? 'active' : ''">
+                                    <a class="page-link" th:href="@{'/enrollments/enrollmentList'(page=${pageNum}, size=${students.size})}" th:text="${pageNum + 1}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${students.last} ? 'disabled'">
+                                    <a class="page-link" th:href="@{'/enrollments/enrollmentList'(page=${students.last ? students.number : students.number + 1}, size=${students.size})}">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+# Compiled class files & build directories
+**/target/
+target/
+build/
+**/build/
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Log files
+*.log
+logs/
+
+# IDE & Editor files
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+.apt_generated
+.springBeans
+.sts4-cache
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini

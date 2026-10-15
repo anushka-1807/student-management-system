@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/layout :: head}"></head>
+
+<body>
+<div class="d-flex" id="wrapper">
+    <div th:replace="~{fragments/layout :: sidebar}"></div>
+
+    <div id="page-content-wrapper">
+        <div th:replace="~{fragments/layout :: navbar}"></div>
+
+        <div class="container-fluid px-4 py-4">
+
+            <!-- Page header -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <div>
+                    <h2 class="mb-0">Students</h2>
+                    <p class="text-muted mb-0" style="font-size:.85rem;margin-top:2px;">Manage all registered students</p>
+                </div>
+                <a th:href="@{/students/new}" class="btn btn-primary">
+                    <i class="bi bi-person-plus-fill"></i> Add New Student
+                </a>
+            </div>
+
+            <!-- Success alert -->
+            <div th:if="${message}" class="alert alert-success" role="alert">
+                <i class="bi bi-check-circle-fill"></i>
+                <span th:text="${message}"></span>
+            </div>
+
+            <!-- Table card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-people"></i> Student List
+                </div>
+                <div class="card-body p-0">
+                    <div class="text-muted p-4" th:if="${students.content.isEmpty()}">
+                        <i class="bi bi-inbox me-2"></i>No students found. Add your first student!
+                    </div>
+                    <div class="table-responsive" th:if="${!students.content.isEmpty()}">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="student : ${students.content}">
+                                    <td data-label="ID" th:text="${student.id}"></td>
+                                    <td data-label="Student">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0;"
+                                                 th:text="${#strings.substring(student.firstName,0,1)}">A</div>
+                                            <div>
+                                                <div style="font-weight:600;font-size:.875rem;" th:text="|${student.firstName} ${student.lastName}|"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label="Email" th:text="${student.email}"></td>
+                                    <td data-label="Phone" th:text="${student.phoneNumber}"></td>
+                                    <td data-label="Status">
+                                        <span class="badge-pill badge-active" th:if="${student.active}"><i class="bi bi-circle-fill" style="font-size:.45rem;"></i> Active</span>
+                                        <span class="badge-pill badge-inactive" th:unless="${student.active}"><i class="bi bi-circle-fill" style="font-size:.45rem;"></i> Inactive</span>
+                                    </td>
+                                    <td data-label="Actions">
+                                        <div class="d-flex gap-1">
+                                            <a th:href="@{/students/{id}(id=${student.id})}"
+                                               class="btn btn-sm btn-info" title="View">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a th:href="@{/students/{id}/edit(id=${student.id})}"
+                                               class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="px-4 py-3 border-top" th:if="${!students.content.isEmpty()}">
+                        <nav aria-label="Student pagination">
+                            <ul class="pagination justify-content-end mb-0">
+                                <li class="page-item" th:classappend="${students.first} ? 'disabled'">
+                                    <a class="page-link" th:href="@{'/students/list'(page=${students.first ? 0 : students.number -1}, size=${students.size})}">
+                                        <i class="bi bi-chevron-left"></i>
+                                    </a>
+                                </li>
+                                <li class="page-item"
+                                    th:each="pageNum : ${#numbers.sequence(0, students.totalPages-1)}"
+                                    th:classappend="${pageNum} == ${students.number} ? 'active' : ''">
+                                    <a class="page-link"
+                                       th:href="@{'/students/list'(page=${pageNum}, size=${students.size})}"
+                                       th:text="${pageNum + 1}"></a>
+                                </li>
+                                <li class="page-item" th:classappend="${students.last} ? 'disabled'">
+                                    <a class="page-link" th:href="@{'/students/list'(page=${students.last ? students.number : students.number + 1}, size=${students.size})}">
+                                        <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>
